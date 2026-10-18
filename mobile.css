@@ -1,0 +1,87 @@
+/* Creator Hub phone layer: keeps every page readable and tappable at about 320–430px wide. */
+
+/* Safe side gutters on phones with notches and system bars */
+main{padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-top:1.4rem}
+footer{padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+
+/* Stop iOS from zooming in when a field is tapped */
+input,select,textarea{font-size:16px}
+
+/* Bigger touch targets */
+.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;max-width:100%}
+.chip{min-height:36px;display:inline-flex;align-items:center}
+.links a{min-height:36px;display:inline-flex;align-items:center}
+.slot{min-height:44px}
+.slot button,.queue .x{min-width:36px;min-height:36px}
+.script .copy{min-height:32px;padding:.45rem .8rem}
+
+@media (max-width:600px){
+  /* Nav: logo on one line, page links scroll sideways in their own strip */
+  .nav{padding:.7rem max(14px,env(safe-area-inset-left,0px)) .7rem max(14px,env(safe-area-inset-right,0px));gap:.5rem}
+  .logo{font-size:1.35rem}
+  .logo small{font-size:.9rem}
+  .links{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .links::-webkit-scrollbar{display:none}
+  .links a{flex:0 0 auto}
+
+  main{padding-bottom:3.5rem}
+  .hero{padding:1.2rem;border-radius:24px;gap:1.4rem}
+  .hero h1{font-size:clamp(2.1rem,11vw,2.8rem);text-shadow:3px 3px 0 var(--pink)}
+  .hero p.lede{font-size:1.02rem}
+  .hero .scrawl{font-size:1.4rem}
+
+  /* Stack the big buttons full width */
+  .hero > div > div[style*="display:flex"]{flex-direction:column}
+  .hero .btn{width:100%;text-align:center}
+
+  .card{padding:1.1rem;border-radius:18px}
+  .card h3{font-size:1.25rem}
+  .card:hover{transform:none}
+
+  .tiles{grid-template-columns:1fr;gap:1.2rem;padding:1rem;border-radius:22px}
+  .tiles a{display:block}
+
+  .week{grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+  .day{padding:.7rem}
+  .day h4{font-size:1rem}
+  .slot{font-size:.88rem;padding:.4rem .5rem}
+
+  .accounts{grid-template-columns:1fr}
+  .queue li{grid-template-columns:auto 1fr auto;gap:.6rem;padding:.6rem .7rem}
+  .queue .when{font-size:.66rem}
+
+  /* Forms stack to one column; inline forms wrap */
+  #addDay,#addAcct{flex-direction:column;align-items:stretch}
+  #addDay input,#addAcct input{flex:1 1 auto;width:100%}
+  #addDay .btn,#addAcct .btn{width:100%}
+  #addPost{grid-template-columns:1fr!important}
+  #addPost .btn{justify-self:stretch!important;width:100%}
+  label.field{margin-bottom:.8rem}
+
+  /* Stickers are smaller on phones so they don't crowd the text */
+  .sticker{width:calc(var(--s,70px) * .55)!important;height:calc(var(--s,70px) * .55)!important}
+  .hero-sticker{width:calc(var(--s,70px) * .6)!important;height:calc(var(--s,70px) * .6)!important}
+  .foot-sticker{width:calc(var(--s,60px) * .6)!important;height:calc(var(--s,60px) * .6)!important}
+
+  /* Footer links wrap into tidy pills */
+  .foot-links{gap:.4rem}
+  .foot-links a{font-size:.64rem;padding:.4rem .7rem}
+
+  /* Stripes and dividers shrink with the screen */
+  .stripes{height:30px;margin-bottom:1.4rem}
+  .beadline{width:180px}
+
+  /* Stop the sticky nav from covering the first heading on short screens */
+  h1{scroll-margin-top:90px}
+}
+
+@media (max-width:380px){
+  .hero h1{font-size:2rem}
+  .week{grid-template-columns:1fr}
+  .links a{font-size:.64rem;padding:.4rem .7rem}
+}
+
+/* Respect a phone's reduced motion setting */
+@media (prefers-reduced-motion:reduce){
+  .ticker-track{animation:none}
+}

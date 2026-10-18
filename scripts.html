@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ideas &amp; Scripts · Creator Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=Fredoka:wght@400;500;600&family=Caveat:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="mobile.css">
+</head>
+<body data-page="scripts">
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track">
+  <span>hook first, always ✦</span><span class="heart">♥</span><span>say it like you say it ✦</span><span class="heart">♥</span><span>hook first, always ✦</span><span class="heart">♥</span><span>say it like you say it ✦</span><span class="heart">♥</span>
+</div></div>
+
+<nav class="nav">
+  <a class="logo" href="index.html">Creator Hub<small>your little AI studio</small></a>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="routine.html">Routine</a>
+    <a class="on" href="scripts.html">Ideas &amp; Scripts</a>
+    <a href="manager.html">Account Manager</a>
+  </div>
+</nav>
+
+<main>
+  <div class="stripes dark" aria-hidden="true"></div>
+  <span class="patch">ideas &amp; scripts</span>
+  <h1 class="shrik" style="font-size:clamp(2.2rem,5vw,3.6rem);color:var(--burgundy);margin:.8rem 0 .3rem">What should I post?</h1>
+  <p class="caveat" style="font-size:1.5rem;color:var(--hot)">pick your niche, get a week of ideas and scripts ✎</p>
+
+  <section class="card sun tilt-l" style="margin-top:2rem">
+    <span class="tape"></span>
+    <h3>1. Your creator setup</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:.6rem">
+      <label class="field">Your niche
+        <select id="niche">
+          <option value="beauty">Beauty &amp; skincare</option>
+          <option value="food">Food &amp; cooking</option>
+          <option value="fashion">Fashion &amp; style</option>
+          <option value="fitness">Fitness &amp; wellness</option>
+          <option value="study">Study &amp; productivity</option>
+          <option value="books">Books &amp; reading</option>
+          <option value="travel">Travel</option>
+          <option value="tech">Tech &amp; coding</option>
+        </select>
+      </label>
+      <label class="field">Your name / handle
+        <input id="handle" placeholder="@yourhandle" value="">
+      </label>
+      <label class="field">Tone
+        <select id="tone">
+          <option value="playful">Playful &amp; bubbly</option>
+          <option value="calm">Calm &amp; cozy</option>
+          <option value="bold">Bold &amp; direct</option>
+          <option value="nerdy">Nerdy &amp; honest</option>
+        </select>
+      </label>
+    </div>
+    <p style="margin-top:.4rem;font-size:.9rem">Your niche and tone decide the ideas and the script voice below.</p>
+  </section>
+
+  <section style="margin-top:2.4rem">
+    <h2 class="shrik" style="font-size:2rem;color:var(--burgundy)">2. Pick a format</h2>
+    <div class="chips" id="formats">
+      <button class="chip on" data-f="Reel">Reel</button>
+      <button class="chip" data-f="Carousel">Carousel</button>
+      <button class="chip" data-f="Story">Story</button>
+      <button class="chip" data-f="Short video">Short video</button>
+    </div>
+  </section>
+
+  <section style="margin-top:1.6rem">
+    <h2 class="shrik" style="font-size:2rem;color:var(--burgundy)">3. Your week of ideas</h2>
+    <p style="margin:.3rem 0 1rem">tap any idea to see its script</p>
+    <div class="tiles" id="ideas" style="margin-top:1rem"></div>
+  </section>
+
+  <section class="card mint tilt-r" style="margin-top:2rem">
+    <span class="tape"></span>
+    <h3>4. Your script</h3>
+    <p style="font-size:.95rem">Fill in the blanks (in brackets) to make it yours.</p>
+    <div id="scriptBox"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="shrik">Creator Hub</div>
+  <p>every script is a starting point, not a rule ♡</p>
+</footer>
+
+<script>
+(function(){
+  // Ideas bank by niche. Each idea has a hook and a script with [placeholders].
+  const bank = {
+    beauty:{
+      Reel:[
+        {title:'Get-ready with me, 60 seconds', hook:'Only 60 seconds, and this is my whole routine.', body:'Hook: "Only 60 seconds, and this is my whole routine." Step 1: [product] on clean skin. Step 2: [product] for [skin concern]. Step 3: the one thing I never skip is [product]. End: "Save this for mornings you are running late."'},
+        {title:'Swap I made (budget vs luxury)', hook:'The [expensive product] dupe nobody talks about.', body:'Hook: "The [expensive product] dupe nobody talks about." Show the luxury one, then the budget one. Say the one difference that matters. End: "Would you notice the difference? Tell me below."'}
+      ],
+      Carousel:[{title:'5 mistakes I made with [skin concern]', hook:'Slide 1: "I wasted money on this for a year."', body:'Slide 1: hook. Slides 2–5: one mistake each with a fix. Last slide: "Which one are you doing? Comment the number."'}],
+      Story:[{title:'Product poll', hook:'Which one should I try next?', body:'Poll with two products. Next story: show the one that won. Add a question sticker: "What should I review next?"'}],
+      'Short video':[{title:'Routine in one line', hook:'My skin routine in one sentence.', body:'Say the hook, then show 3 steps quickly, then the result. Keep it under 30 seconds.'}]
+    },
+    food:{
+      Reel:[
+        {title:'3-ingredient dinner', hook:'Dinner in 10 minutes, three ingredients.', body:'Hook: "Dinner in 10 minutes, three ingredients, no excuses." Show each ingredient. Show the finished plate and a bite. End: "Tell me which one you would make first."'},
+        {title:'Kitchen fail, then the fix', hook:'I burned this so you do not have to.', body:'Hook: "I burned this so you do not have to." Show the mistake, say what went wrong, show the fix. End: "What is your cooking disaster?"'}
+      ],
+      Carousel:[{title:'Make this every week', hook:'Slide 1: "My weekly prep in one post."', body:'One slide per recipe step. Last slide: a shopping list they can screenshot.'}],
+      Story:[{title:'What is for dinner?', hook:'Help me pick tonight.', body:'Two-option poll with photos of each dish.'}],
+      'Short video':[{title:'Satisfying cut', hook:'Watch this knife do its thing.', body:'Hook on the cut. Quick shots. Text overlay with the recipe name. No talking needed.'}]
+    },
+    fashion:{
+      Reel:[
+        {title:'Outfit from my closet', hook:'Same [piece] three ways.', body:'Hook: "Same [piece], three ways, zero new purchases." Show outfit 1, 2, 3 with a quick beat change. End: "Which one is your favorite?"'},
+        {title:'Thrift haul under [budget]', hook:'Everything here was under [budget].', body:'Hook with the total price. Show each item with a one-line note. End: "Which one would you wear first?"'}
+      ],
+      Carousel:[{title:'Capsule wardrobe in 7 pieces', hook:'Slide 1: "Seven pieces, a month of outfits."', body:'Each slide is one piece with three outfit ideas. Last slide: a save reminder.'}],
+      Story:[{title:'Outfit check', hook:'Yes or no?', body:'Two photos. Use the yes/no poll.'}],
+      'Short video':[{title:'Get dressed with me', hook:'Five minutes, one bag, one look.', body:'Quick cuts, hook first, end on the full outfit.'}]
+    },
+    fitness:{
+      Reel:[
+        {title:'The 5-minute routine', hook:'Five minutes. You will feel it.', body:'Hook: "Five minutes, no equipment." Show each move with a count on screen. End: "Do this with me tomorrow morning."'},
+        {title:'What I eat in a day', hook:'What I actually eat (not a meal plan).', body:'Hook first. Show 3 meals fast. Say one honest line about how you feel. End: "What is your go-to lunch?"'}
+      ],
+      Carousel:[{title:'Beginner mistakes', hook:'Slide 1: "Stop doing this at the gym."', body:'One mistake per slide, with the fix. Last slide: a save reminder.'}],
+      Story:[{title:'Today I did', hook:'Quick check-in.', body:'Show the workout, then a question sticker: "What should I train tomorrow?"'}],
+      'Short video':[{title:'Form tip', hook:'Do this, not that.', body:'Show the wrong form, then the right form, then one cue.'}]
+    },
+    study:{
+      Reel:[
+        {title:'Study with me, 3 hours', hook:'Three hours, one desk, no phone.', body:'Hook: "Three hours, one desk, no phone." Show the setup, a time-lapse, the finished notes. End: "Study buddy in the comments?"'},
+        {title:'How I take notes', hook:'The note method that finally stuck.', body:'Hook. Show the notebook. Explain your method in three steps. End: "Want the template? Comment NOTES."'}
+      ],
+      Carousel:[{title:'5 study habits that work', hook:'Slide 1: "Stop rereading. Start doing this."', body:'One habit per slide with a quick why. Last slide: "Save for exam week."'}],
+      Story:[{title:'Focus timer', hook:'Locked in for 25 minutes.', body:'Show the timer. Next story: the result. Add a poll: "Did you do yours?"'}],
+      'Short video':[{title:'Study tip in 20 seconds', hook:'The one thing that doubled my focus.', body:'Hook, one tip, one example. Short and clear.'}]
+    },
+    books:{
+      Reel:[
+        {title:'Book I finished this week', hook:'I finished this in two days, and I cried.', body:'Hook: "I finished this in two days and I cried." Show the cover, one quote in your own words, your rating. End: "Add it to your list?"'},
+        {title:'Books for [mood]', hook:'If you are feeling [mood], read this.', body:'Three books, one line each on why it fits the mood. End: "Which one is on your list?"'}
+      ],
+      Carousel:[{title:'Books that felt like a hug', hook:'Slide 1: "Cozy reads for a rainy week."', body:'One book per slide with a cover, a line of why, and a rating.'}],
+      Story:[{title:'Currently reading', hook:'Page [number], and I have opinions.', body:'Show the page. Poll: "Should I keep going or DNF?"'}],
+      'Short video':[{title:'Shelf tour', hook:'My shelf, one book at a time.', body:'Pick up each book, say one word about it, and move on.'}]
+    },
+    travel:{
+      Reel:[
+        {title:'Hidden spot in [city]', hook:'Nobody told me about this spot in [city].', body:'Hook. Show the walk there, the view, and one tip. End: "Would you go?"'},
+        {title:'Budget day in [city]', hook:'A full day here for [budget].', body:'Hook with the total. Show each stop with its cost. End: "Save this for your next trip."'}
+      ],
+      Carousel:[{title:'Packing list that works', hook:'Slide 1: "Pack this, leave that."', body:'Items on each slide grouped by category. Last slide: a checklist to save.'}],
+      Story:[{title:'Where should I go next?', hook:'Help me pick.', body:'Two-option poll with photos.'}],
+      'Short video':[{title:'Packing in 30 seconds', hook:'One bag, seven days.', body:'Fast shots of each item going in. Text overlay with the count.'}]
+    },
+    tech:{
+      Reel:[
+        {title:'One tool I use every day', hook:'This free tool saves me an hour a day.', body:'Hook. Show the tool, one task, and the result. End: "What tool do you use daily?"'},
+        {title:'Code bug I fixed', hook:'This one line broke my whole app.', body:'Hook. Show the bug, say why it broke, show the fix. End: "Have you hit this one?"'}
+      ],
+      Carousel:[{title:'Beginner mistakes', hook:'Slide 1: "Stop making these mistakes."', body:'One mistake per slide with the fix. Last slide: a save reminder.'}],
+      Story:[{title:'Build log', hook:'Day [number] of building this.', body:'Show progress. Poll: "What should I build next?"'}],
+      'Short video':[{title:'Shortcut in 15 seconds', hook:'Learn this shortcut today.', body:'Show the keys. Show the result. One line of why.'}]
+    }
+  };
+
+  const toneOpen = {
+    playful:['okay babes,','you asked, here it is!','this one is a vibe:'],
+    calm:['slow down with me for a second.','here is a gentle one.','take a breath, then try this.'],
+    bold:['stop scrolling.','this is the one.','no filler, just this:'],
+    nerdy:['I tested this so you do not have to.','the data says:','honest take:']
+  };
+
+  let format = 'Reel';
+  let selected = null;
+
+  const $ = id => document.getElementById(id);
+  const niche = () => $('niche').value;
+  const tone = () => $('tone').value;
+  const handle = () => $('handle').value.trim() || 'you';
+
+  function renderIdeas(){
+    const list = (bank[niche()] && bank[niche()][format]) || [];
+    const wrap = $('ideas');
+    wrap.innerHTML = '';
+    if(!list.length){
+      wrap.innerHTML = '<p>no ideas here yet, try another format.</p>';
+      return;
+    }
+    list.forEach((idea,i)=>{
+      const a = document.createElement('article');
+      const cls = ['sky','mint','lilac','sun','pink'][i % 5];
+      a.className = 'card ' + cls;
+      a.style.cursor = 'pointer';
+      a.innerHTML = `<span class="tape"></span><h3>${idea.title}</h3><p>${idea.hook}</p>`;
+      a.onclick = () => { selected = idea; renderScript(); document.getElementById('scriptBox').scrollIntoView({behavior:'smooth'}); };
+      wrap.appendChild(a);
+    });
+    if(!selected || !list.includes(selected)){ selected = list[0]; }
+    renderScript();
+  }
+
+  function renderScript(){
+    const box = $('scriptBox');
+    if(!selected){ box.innerHTML = ''; return; }
+    const openers = toneOpen[tone()];
+    const opener = openers[Math.floor(Math.random()*openers.length)];
+    const text = `${opener} ${selected.body}`;
+    box.innerHTML = `
+      <div class="script"><button class="copy" type="button">copy</button>
+        <p>${escapeHtml(text)}</p>
+      </div>
+      <p class="caveat" style="font-size:1.3rem;margin-top:.8rem">post as ${escapeHtml(handle())} · tone: ${tone()} · format: ${format.toLowerCase()}</p>`;
+    box.querySelector('.copy').onclick = e => {
+      navigator.clipboard && navigator.clipboard.writeText(text);
+      e.target.textContent = 'copied ♡';
+      setTimeout(()=> e.target.textContent = 'copy', 1200);
+    };
+  }
+
+  function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  document.querySelectorAll('#formats .chip').forEach(btn=>{
+    btn.onclick = () => {
+      document.querySelectorAll('#formats .chip').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      format = btn.dataset.f;
+      selected = null;
+      renderIdeas();
+    };
+  });
+  ['niche','tone','handle'].forEach(id => $(id).addEventListener('input', () => { selected = null; renderIdeas(); }));
+  $('handle').addEventListener('input', renderScript);
+
+  renderIdeas();
+})();
+</script>
+<script src="decor.js" defer></script>
+<script src="whimsy.js" defer></script>
+<script src="whimsy2.js" defer></script>
+<script src="footer.js" defer></script>
+</body>
+</html>

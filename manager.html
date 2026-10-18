@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Account Manager · Creator Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=Fredoka:wght@400;500;600&family=Caveat:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="mobile.css">
+</head>
+<body data-page="manager">
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track">
+  <span>one calendar, every account ✦</span><span class="heart">♥</span><span>queue it, then forget it ✦</span><span class="heart">♥</span><span>one calendar, every account ✦</span><span class="heart">♥</span><span>queue it, then forget it ✦</span><span class="heart">♥</span>
+</div></div>
+
+<nav class="nav">
+  <a class="logo" href="index.html">Creator Hub<small>your little AI studio</small></a>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a href="routine.html">Routine</a>
+    <a href="scripts.html">Ideas &amp; Scripts</a>
+    <a class="on" href="manager.html">Account Manager</a>
+  </div>
+</nav>
+
+<main>
+  <div class="stripes" aria-hidden="true"></div>
+  <span class="patch">account manager</span>
+  <h1 class="shrik" style="font-size:clamp(2.2rem,5vw,3.6rem);color:var(--burgundy);margin:.8rem 0 .3rem">Every account, one little desk</h1>
+  <p class="caveat" style="font-size:1.5rem;color:var(--hot)">add your accounts, queue your posts, let the week run itself ✧</p>
+
+  <!-- Accounts -->
+  <section style="margin-top:2rem">
+    <h2 class="shrik" style="font-size:2rem;color:var(--burgundy)">Your accounts</h2>
+    <div class="accounts" id="accounts" style="margin-top:1rem"></div>
+    <form id="addAcct" style="display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap">
+      <input id="acctName" placeholder="platform + @handle, e.g. Instagram @yourname" style="flex:1 1 260px">
+      <button class="btn alt" type="submit">add account</button>
+    </form>
+  </section>
+
+  <!-- Queue -->
+  <section class="card pink tilt-l" style="margin-top:2.6rem">
+    <span class="tape"></span>
+    <h3>Posting queue</h3>
+    <p style="font-size:.95rem">Add a post, pick a day, and it sits here until it goes out.</p>
+    <form id="addPost" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;margin-top:1rem;align-items:end">
+      <label class="field">Post
+        <input id="postTitle" placeholder="e.g. 3-ingredient dinner Reel">
+      </label>
+      <label class="field">Account
+        <select id="postAcct"></select>
+      </label>
+      <label class="field">Day
+        <select id="postDay">
+          <option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+        </select>
+      </label>
+      <label class="field">Time
+        <input id="postTime" type="time" value="19:00">
+      </label>
+      <button class="btn" type="submit" style="justify-self:start">queue it</button>
+    </form>
+    <ul class="queue" id="queue"></ul>
+  </section>
+
+  <!-- Week glance -->
+  <section class="card sky tilt-r" style="margin-top:2.6rem">
+    <span class="tape"></span>
+    <h3>This week at a glance</h3>
+    <div class="week" id="glance" style="margin-top:.8rem"></div>
+  </section>
+
+  <!-- Caption helper -->
+  <section class="card sun" style="margin-top:2.6rem">
+    <h3>Caption helper</h3>
+    <p style="font-size:.95rem">Paste a rough caption and we'll tidy the length and add a hashtag block to copy.</p>
+    <textarea id="caption" placeholder="write your caption here…" style="margin-top:.8rem"></textarea>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem">
+      <button class="btn" id="tidy">tidy it</button>
+      <button class="btn ghost" id="clearCap">clear</button>
+    </div>
+    <div class="script" id="capOut" style="display:none"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="shrik">Creator Hub</div>
+  <p>all your accounts, one calm desk ♡</p>
+</footer>
+
+<script>
+(function(){
+  const KEY = 'creatorhub.manager.v1';
+  const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const state = JSON.parse(localStorage.getItem(KEY) || 'null') || {
+    accounts: ['Instagram @yourname'],
+    posts: []
+  };
+  const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const colors = ['sky','mint','lilac','sun','pink'];
+  const blobCols = ['#bcdcf2','#bfe8c8','#c9b6f2','#ffd86b','#f7b6c8'];
+
+  function renderAccounts(){
+    const wrap = $('accounts');
+    wrap.innerHTML = '';
+    state.accounts.forEach((name,i)=>{
+      const count = state.posts.filter(p => p.acct === name).length;
+      const pct = Math.min(100, count * 20);
+      const card = document.createElement('div');
+      card.className = 'card ' + colors[i % 5];
+      card.innerHTML = `
+        <div class="acct">
+          <div class="blob" style="background:${blobCols[i % 5]}">${esc(name.charAt(0).toUpperCase())}</div>
+          <div style="flex:1">
+            <strong>${esc(name)}</strong>
+            <div style="font-size:.9rem">${count} post${count===1?'':'s'} queued</div>
+            <div class="bar"><i style="width:${pct}%"></i></div>
+          </div>
+        </div>
+        <button class="chip" style="margin-top:.8rem" data-rm="${i}">remove</button>`;
+      card.querySelector('[data-rm]').onclick = () => {
+        const removed = state.accounts[i];
+        state.accounts.splice(i,1);
+        state.posts = state.posts.filter(p => p.acct !== removed);
+        save(); renderAll();
+      };
+      wrap.appendChild(card);
+    });
+    if(!state.accounts.length){
+      wrap.innerHTML = '<p>no accounts yet. add one below ♡</p>';
+    }
+    const sel = $('postAcct');
+    sel.innerHTML = state.accounts.map(a => `<option>${esc(a)}</option>`).join('');
+  }
+
+  function renderQueue(){
+    const ul = $('queue');
+    ul.innerHTML = '';
+    const order = {};
+    DAYS.forEach((d,i)=>order[d]=i);
+    const sorted = [...state.posts].sort((a,b)=> order[a.day]-order[b.day] || a.time.localeCompare(b.time));
+    if(!sorted.length){ ul.innerHTML = '<li>nothing queued yet. your week is wide open ✿</li>'; return; }
+    sorted.forEach(p=>{
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="when">${p.day} · ${p.time}</span>
+        <div><strong>${esc(p.title)}</strong><div style="font-size:.85rem">${esc(p.acct)}</div></div>
+        <button class="x" aria-label="remove post">✕</button>`;
+      li.querySelector('.x').onclick = () => {
+        state.posts = state.posts.filter(q => q.id !== p.id);
+        save(); renderAll();
+      };
+      ul.appendChild(li);
+    });
+  }
+
+  function renderGlance(){
+    const wrap = $('glance');
+    wrap.innerHTML = '';
+    DAYS.forEach((d,i)=>{
+      const items = state.posts.filter(p=>p.day===d).sort((a,b)=>a.time.localeCompare(b.time));
+      const col = document.createElement('div');
+      col.className = 'day';
+      col.innerHTML = `<h4>${d}</h4>` + (items.length
+        ? items.map(p=>`<div class="slot"><span>${esc(p.time)} · ${esc(p.title)}</span></div>`).join('')
+        : '<div class="slot" style="opacity:.55"><span>rest day ♡</span></div>');
+      wrap.appendChild(col);
+    });
+  }
+
+  function renderAll(){ renderAccounts(); renderQueue(); renderGlance(); }
+
+  $('addAcct').onsubmit = e => {
+    e.preventDefault();
+    const v = $('acctName').value.trim();
+    if(!v) return;
+    state.accounts.push(v);
+    $('acctName').value = '';
+    save(); renderAll();
+  };
+
+  $('addPost').onsubmit = e => {
+    e.preventDefault();
+    const title = $('postTitle').value.trim();
+    const acct = $('postAcct').value;
+    if(!title || !acct) return;
+    state.posts.push({
+      id: Date.now().toString(36),
+      title, acct,
+      day: $('postDay').value,
+      time: $('postTime').value || '19:00'
+    });
+    $('postTitle').value = '';
+    save(); renderAll();
+  };
+
+  // Caption helper: trims extra spaces, keeps the first line as a hook, adds a hashtag block.
+  $('tidy').onclick = () => {
+    const raw = $('caption').value.trim();
+    if(!raw){ return; }
+    const clean = raw.replace(/\s+/g,' ').replace(/\s([.,!?])/g,'$1');
+    const words = clean.split(' ');
+    const short = words.length > 40 ? words.slice(0,40).join(' ') + '…' : clean;
+    const tags = (clean.toLowerCase().match(/[a-z]{4,}/g) || [])
+      .filter((w,i,a)=>a.indexOf(w)===i).slice(0,8).map(w=>'#'+w).join(' ');
+    const out = $('capOut');
+    out.style.display = 'block';
+    out.innerHTML = `<p>${esc(short)}</p><p style="margin-top:.6rem;font-size:.9rem">${esc(tags)}</p>`;
+  };
+  $('clearCap').onclick = () => { $('caption').value = ''; $('capOut').style.display = 'none'; };
+
+  renderAll();
+})();
+</script>
+<script src="decor.js" defer></script>
+<script src="whimsy.js" defer></script>
+<script src="whimsy2.js" defer></script>
+<script src="footer.js" defer></script>
+</body>
+</html>

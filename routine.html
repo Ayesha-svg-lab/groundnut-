@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Routine Garden · Creator Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=Fredoka:wght@400;500;600&family=Caveat:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="mobile.css">
+</head>
+<body data-page="routine">
+
+<div class="ticker" aria-hidden="true"><div class="ticker-track">
+  <span>one small habit a day ✦</span><span class="heart">♥</span><span>tick it, see it bloom ✦</span><span class="heart">♥</span><span>one small habit a day ✦</span><span class="heart">♥</span><span>tick it, see it bloom ✦</span><span class="heart">♥</span>
+</div></div>
+
+<nav class="nav">
+  <a class="logo" href="index.html">Creator Hub<small>your little AI studio</small></a>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <a class="on" href="routine.html">Routine</a>
+    <a href="scripts.html">Ideas &amp; Scripts</a>
+    <a href="manager.html">Account Manager</a>
+  </div>
+</nav>
+
+<main>
+  <div class="stripes" aria-hidden="true"></div>
+  <span class="patch">routine garden</span>
+  <h1 class="shrik" style="font-size:clamp(2.2rem,5vw,3.6rem);color:var(--burgundy);margin:.8rem 0 .3rem">Your daily &amp; weekly routine</h1>
+  <p class="caveat" style="font-size:1.5rem;color:var(--hot)">small steps, planted every day 🌱</p>
+
+  <!-- Daily -->
+  <section class="card sky tilt-l" style="margin-top:2rem">
+    <span class="tape"></span>
+    <h3>Today</h3>
+    <div class="progress" aria-label="daily progress"><i id="dayBar"></i></div>
+    <p id="dayText" style="font-size:.95rem"></p>
+    <div id="dayList" style="margin-top:.8rem"></div>
+    <form id="addDay" style="display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap">
+      <input id="dayInput" placeholder="add something for today…" style="flex:1 1 220px">
+      <button class="btn" type="submit">add</button>
+    </form>
+  </section>
+
+  <!-- Weekly -->
+  <section class="card mint tilt-r" style="margin-top:2.2rem">
+    <span class="tape"></span>
+    <h3>This week</h3>
+    <p style="font-size:.95rem">Add a slot to any day. Your creator tasks like filming, editing and posting go here.</p>
+    <div class="week" id="week"></div>
+  </section>
+
+  <!-- Post plan -->
+  <section class="card lilac" style="margin-top:2.2rem">
+    <h3>Post rhythm</h3>
+    <p style="font-size:.95rem;margin-bottom:1rem">How often do you want to post? We'll shape your week around that.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
+      <label class="field">Posts per week
+        <select id="perWeek">
+          <option>2</option><option selected>3</option><option>4</option><option>5</option><option>7</option>
+        </select>
+      </label>
+      <label class="field">Best posting time
+        <select id="bestTime">
+          <option>7:00 PM</option><option>12:30 PM</option><option>9:00 AM</option>
+        </select>
+      </label>
+      <label class="field">Main format
+        <select id="format">
+          <option>Reels</option><option>Carousels</option><option>Stories</option><option>Photos</option>
+        </select>
+      </label>
+    </div>
+    <p id="rhythm" class="caveat" style="font-size:1.35rem;margin-top:.4rem"></p>
+  </section>
+</main>
+
+<footer>
+  <div class="shrik">Creator Hub</div>
+  <p>your routine is saved on this device ♡</p>
+</footer>
+
+<script>
+(function(){
+  const KEY = 'creatorhub.routine.v1';
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const state = JSON.parse(localStorage.getItem(KEY) || 'null') || {
+    today: [
+      {t:'Morning hook draft', d:false},
+      {t:'Reply to comments', d:false},
+      {t:'Post the Reel', d:false}
+    ],
+    week: Object.fromEntries(days.map(d=>[d,[]])),
+    weekSeed: false
+  };
+  if(!state.weekSeed){
+    state.week.Mon.push({t:'Film Reel', d:false});
+    state.week.Wed.push({t:'Edit & caption', d:false});
+    state.week.Fri.push({t:'Post carousel', d:false});
+    state.weekSeed = true;
+  }
+  const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+  const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function renderDay(){
+    const list = document.getElementById('dayList');
+    list.innerHTML = '';
+    state.today.forEach((task,i)=>{
+      const row = document.createElement('div');
+      row.className = 'slot' + (task.d ? ' done' : '');
+      row.innerHTML = `<input type="checkbox" ${task.d?'checked':''}><span>${esc(task.t)}</span><button title="remove" aria-label="remove">✕</button>`;
+      row.querySelector('input').onchange = e => { task.d = e.target.checked; save(); renderDay(); };
+      row.querySelector('button').onclick = () => { state.today.splice(i,1); save(); renderDay(); };
+      list.appendChild(row);
+    });
+    const done = state.today.filter(t=>t.d).length;
+    const total = state.today.length;
+    const pct = total ? Math.round(done/total*100) : 0;
+    document.getElementById('dayBar').style.width = pct + '%';
+    document.getElementById('dayText').textContent = total
+      ? `${done} of ${total} done today (${pct}%). ${pct===100 ? 'you did it, gorgeous ✿' : 'keep going, you are doing great.'}`
+      : 'nothing planned yet, add your first little task.';
+  }
+
+  function renderWeek(){
+    const wrap = document.getElementById('week');
+    wrap.innerHTML = '';
+    days.forEach(d=>{
+      const col = document.createElement('div');
+      col.className = 'day';
+      col.innerHTML = `<h4>${d}</h4>`;
+      state.week[d].forEach((task,i)=>{
+        const row = document.createElement('div');
+        row.className = 'slot' + (task.d ? ' done' : '');
+        row.innerHTML = `<input type="checkbox" ${task.d?'checked':''}><span>${esc(task.t)}</span><button aria-label="remove">✕</button>`;
+        row.querySelector('input').onchange = e => { task.d = e.target.checked; save(); renderWeek(); };
+        row.querySelector('button').onclick = () => { state.week[d].splice(i,1); save(); renderWeek(); };
+        col.appendChild(row);
+      });
+      const add = document.createElement('button');
+      add.className = 'chip';
+      add.style.marginTop = '.5rem';
+      add.textContent = '+ add';
+      add.onclick = () => {
+        const t = prompt(`what is on ${d}?`);
+        if(t && t.trim()){ state.week[d].push({t:t.trim(), d:false}); save(); renderWeek(); }
+      };
+      col.appendChild(add);
+      wrap.appendChild(col);
+    });
+  }
+
+  document.getElementById('addDay').onsubmit = e => {
+    e.preventDefault();
+    const v = document.getElementById('dayInput').value.trim();
+    if(!v) return;
+    state.today.push({t:v, d:false});
+    document.getElementById('dayInput').value = '';
+    save(); renderDay();
+  };
+
+  function renderRhythm(){
+    const n = +document.getElementById('perWeek').value;
+    const f = document.getElementById('format').value;
+    const t = document.getElementById('bestTime').value;
+    const gaps = Math.max(1, Math.floor(7/n));
+    const slots = [];
+    for(let i=0;i<n;i++) slots.push(days[Math.min(6, i*gaps)]);
+    document.getElementById('rhythm').textContent =
+      `${n} ${f.toLowerCase()} a week, around ${t}, on ${slots.join(' · ')}. film the day before ✧`;
+  }
+  ['perWeek','format','bestTime'].forEach(id => document.getElementById(id).onchange = renderRhythm);
+
+  renderDay(); renderWeek(); renderRhythm();
+})();
+</script>
+<script src="decor.js" defer></script>
+<script src="whimsy.js" defer></script>
+<script src="whimsy2.js" defer></script>
+<script src="footer.js" defer></script>
+</body>
+</html>
